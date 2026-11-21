@@ -5,3 +5,4 @@ __pycache__/
 weights/
 *.safetensors
 .DS_Store
+posts/
