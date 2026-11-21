@@ -1,31 +1,49 @@
 # tinyinfer
 
-An LLM inference engine built from scratch, one commit at a time, to learn how inference engines like vLLM work.
+An LLM inference engine built from scratch in plain PyTorch, to understand how engines like vLLM actually work.
 
-Built in public over 14 days. Model: [Qwen3-0.6B](https://huggingface.co/Qwen/Qwen3-0.6B). Hardware: an 8 GB M1 MacBook.
+No `transformers`, no vLLM. Every component is written by hand, tested against the official implementation, and explained in [beginner-friendly notes](notes/README.md).
 
-## Roadmap
-- [ ] Day 1: Qwen3 forward pass from scratch, matching Hugging Face's output
-- [ ] Day 2: generation loop, sampling, KV cache
-- [ ] Day 3: benchmarks (TTFT, TPOT, tokens/sec), prefill vs decode
-- [ ] Day 4: static batching
-- [ ] Day 5: continuous batching
-- [ ] Day 6: OpenAI-compatible streaming server
-- [ ] Day 7–8: paged KV cache and paged attention
-- [ ] Day 9: prefix caching
-- [ ] Day 10: quantization (English vs Hindi quality)
-- [ ] Day 11: speculative decoding
-- [ ] Day 12: torch.compile / CUDA graphs, comparison with vLLM
-- [ ] Day 13–14: profiling, write-up, launch
+- **Model:** [Qwen3-0.6B](https://huggingface.co/Qwen/Qwen3-0.6B)
+- **Hardware:** an 8 GB M1 MacBook
+
+## Progress
+
+**The model, from scratch**
+- [x] RMSNorm
+- [ ] Rotary position embeddings (RoPE)
+- [ ] Attention (grouped-query)
+- [ ] MLP (SwiGLU)
+- [ ] Full forward pass, matching Hugging Face's output
+
+**The engine**
+- [ ] Generation loop and sampling
+- [ ] KV cache
+- [ ] Benchmarks: time to first token, time per token, throughput
+- [ ] Batching: static and continuous
+- [ ] OpenAI-compatible streaming server
+- [ ] Paged KV cache and prefix caching
+- [ ] Quantization
+- [ ] Speculative decoding
+
+## Learn along
+
+Start with [01 · How an LLM works](notes/01-how-an-llm-works.md). It covers what's inside a model file, what the 1,024 numbers per token mean, and why the model scores all 151,936 tokens every time it writes one.
+
+## Run it
+
+```bash
+uv sync                                    # install dependencies
+uv run python scripts/download.py          # download Qwen3-0.6B (1.4 GB)
+uv run pytest -v                           # check every component against Hugging Face
+uv run python scripts/peek.py "The capital of India is"   # watch one sentence go through the model
+```
 
 ## Layout
-- `tinyinfer/`: the engine. Uses only plain PyTorch, no `transformers`.
-- `tests/`: checks our output against Hugging Face's implementation, which is used only as a reference.
-- `scripts/`: one-off tools such as weight download and inspection.
 
-## Setup
-```bash
-uv sync
-uv run python scripts/download.py
-uv run pytest
-```
+| Folder | What's in it |
+|---|---|
+| `tinyinfer/` | The engine, plain PyTorch |
+| `tests/` | Checks each component against Hugging Face's implementation (used only as a reference) |
+| `scripts/` | Tools: download weights, inspect the model file, peek at a forward pass |
+| `notes/` | Learning notes, one chapter per topic |
